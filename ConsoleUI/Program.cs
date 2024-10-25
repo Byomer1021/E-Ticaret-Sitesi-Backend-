@@ -7,9 +7,19 @@ using DataAccess.Concrete.InMemory;
 
 //SOLID
 //Open Closed Principle mevcut koda dokunmadan yeni bir özellik eklemek
-ProductManager productManager=new ProductManager(new EfProductDal());
-
-foreach (var product in productManager.GetByUnitPrice(40,100))
+//ProductTest();
+CategoryManager categoryManager=new CategoryManager(new EfCategoryDal());
+foreach (var category in categoryManager.GetAll())
 {
-    Console.WriteLine(product.ProductName);
+    Console.WriteLine(category.CategoryName);
+}
+
+static void ProductTest()
+{
+    ProductManager productManager = new ProductManager(new EfProductDal());
+
+    foreach (var product in productManager.GetByUnitPrice(40, 100))
+    {
+        Console.WriteLine(product.ProductName);
+    }
 }
