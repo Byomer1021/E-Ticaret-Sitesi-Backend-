@@ -17,6 +17,10 @@ namespace Business.Concrete
     {
         IProductDal _productDal;
 
+        public ProductManager()
+        {
+        }
+
         public ProductManager(IProductDal productDal)
         {
             _productDal = productDal;
