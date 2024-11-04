@@ -13,6 +13,7 @@ namespace WebAPI.Controllers
     {
         //Loosely coupled
         //naming convention
+        //IoC Container -- Inversion of Control
         IProductService _productService;
 
         public ProductsController(IProductService productService)
@@ -20,14 +21,46 @@ namespace WebAPI.Controllers
             _productService = productService;
         }
 
-        [HttpGet]
+        [HttpGet("getall")]
 
-        public List<Product> Get()
+        public IActionResult GetAll()
         {
             //Dependency chain --
             //IProductService productservice = new ProductManager(new EfProductDal());
             var result=  _productService.GetAll();
-            return result.Data;
+            if (result.Success) 
+            {
+                return Ok(result);
+            }
+
+            return BadRequest(result.Message);
         }
+
+        [HttpGet("getbyid")]
+
+        public IActionResult GetById(int id)
+        {
+            //Dependency chain --
+            //IProductService productservice = new ProductManager(new EfProductDal());
+            var result = _productService.GetById(id);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+
+            return BadRequest(result.Message);
+        }
+
+
+
+        [HttpPost("add")]
+
+        public IActionResult Add(Product product) 
+        {
+            var result = _productService.Add(product);
+            if (result.Success) { return Ok(result); }
+            return BadRequest(result.Message);
+        }
+
     }
 }

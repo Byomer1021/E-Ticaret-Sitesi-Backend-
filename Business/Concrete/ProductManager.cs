@@ -67,7 +67,7 @@ namespace Business.Concrete
 
         public IDataResult<List<ProductDetailDto>> GetProductDetails() 
         {
-            if (DateTime.Now.Hour == 00)
+            if (DateTime.Now.Hour == 0)
             {
                 return new ErrorDataResult<List<ProductDetailDto>>(Messages.MaintenanceTime);
             }
