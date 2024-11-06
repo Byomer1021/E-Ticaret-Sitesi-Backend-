@@ -1,4 +1,5 @@
 ﻿using Business.Abstract;
+using Business.CCS;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
 using Core.Aspects.Autofac.Validation;
@@ -21,6 +22,7 @@ namespace Business.Concrete
     {
         IProductDal _productDal;
 
+
         public ProductManager()
         {
         }
@@ -28,12 +30,14 @@ namespace Business.Concrete
         public ProductManager(IProductDal productDal)
         {
             _productDal = productDal;
+
         }
+
 
         [ValidationAspect(typeof(ProductValidator))]
         public IResult Add(Product product)
         {
-            //business codes
+
             //validation
             //if(product.UnitPrice<=0) { return new ErrorResult(Messages.UnitPriceInvalid); }
 
@@ -53,8 +57,22 @@ namespace Business.Concrete
             //    return new ErrorResult(Messages.ProductNameInvalid); 
             //}
 
-            _productDal.Add(product);
-            return new SuccessResult(Messages.ProductAdded);
+            //business codes
+
+
+            if (CheckIfProductCountOfCategoryCorrect(product.CategoryId).Success)
+            {
+                if (CheckIfProductNameExist(product.ProductName).Success)
+                {
+                    _productDal.Add(product);
+                    return new SuccessResult(Messages.ProductAdded);
+
+                }
+
+            }
+
+            return new ErrorResult();
+
         }
 
         public IDataResult<List<Product>> GetAll()
@@ -92,5 +110,36 @@ namespace Business.Concrete
             }
             return new SuccessDataResult<List<ProductDetailDto>>(_productDal.GetProductDetails());
         }
+
+        public IResult Update(Product product)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        private IResult CheckIfProductCountOfCategoryCorrect(int categoryId)
+        {
+            //A category must include at most 15 products
+            //Select count(*) from products where categoryId=1
+            var result = _productDal.GetAll(p => p.CategoryId == categoryId).Count;
+            if (result > 15)
+            {
+                return new ErrorResult(Messages.ProductCountOfCategoryError);
+            }
+            return new SuccessResult();
+        }
+
+        private IResult CheckIfProductNameExist(string prodcutName)
+        {
+            //A category must include at most 15 products
+            //Select count(*) from products where categoryId=1
+            var result = _productDal.GetAll(p => p.ProductName == prodcutName).Any();
+            if (result)
+            {
+                return new ErrorResult(Messages.ProductNameAlreadyExistError);
+            }
+            return new SuccessResult();
+        }
+
     }
 }
