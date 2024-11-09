@@ -1,9 +1,9 @@
 ﻿using Business.Abstract;
-using Business.CCS;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
 using Core.Aspects.Autofac.Validation;
 using Core.CrossCuttingConcerns.Validation;
+using Core.Utilities.Business;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using DataAccess.Concrete.InMemory;
@@ -21,16 +21,12 @@ namespace Business.Concrete
     public class ProductManager : IProductService
     {
         IProductDal _productDal;
+        ICategoryService _categoryService;
 
-
-        public ProductManager()
-        {
-        }
-
-        public ProductManager(IProductDal productDal)
+        public ProductManager(IProductDal productDal, ICategoryService categoryService)
         {
             _productDal = productDal;
-
+            _categoryService = categoryService;
         }
 
 
@@ -59,19 +55,17 @@ namespace Business.Concrete
 
             //business codes
 
-
-            if (CheckIfProductCountOfCategoryCorrect(product.CategoryId).Success)
+            IResult result = BusinessRules.Run(CheckIfProductCountOfCategoryCorrect(product.CategoryId),
+                CheckIfProductNameExist(product.ProductName));
+            if (result != null)
             {
-                if (CheckIfProductNameExist(product.ProductName).Success)
-                {
-                    _productDal.Add(product);
-                    return new SuccessResult(Messages.ProductAdded);
-
-                }
+                return result;
 
             }
 
-            return new ErrorResult();
+            _productDal.Add(product);
+
+            return new SuccessResult(Messages.ProductAdded);
 
         }
 
@@ -140,6 +134,19 @@ namespace Business.Concrete
             }
             return new SuccessResult();
         }
+
+
+        private IResult CheckIfCategoryLimitExceded()
+        {
+            
+            var result = _categoryService.GetAll();
+            if (result.Data.Count>15)
+            {
+                return new ErrorResult(Messages.CategoryLimitExceded);
+            }
+            return new SuccessResult();
+        }
+
 
     }
 }
