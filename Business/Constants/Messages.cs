@@ -1,4 +1,5 @@
-﻿using Entities.Concrete;
+﻿using Core.Entities.Concrete;
+using Entities.Concrete;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,5 +17,12 @@ namespace Business.Constants
         public static string ProductCountOfCategoryError= "A category must include at most 15 products";
         public static string ProductNameAlreadyExistError="Product already exist";
         public static string CategoryLimitExceded = "Category limit exceded";
+        public static string AuthorizationDenied="Authorization Denied";
+        public static string UserRegistered="Successfully registered";
+        public static string UserNotFound="User not exist";
+        public static string PasswordError="Wrong password";
+        public static string SuccessfulLogin="Successful login";
+        public static string UserAlreadyExists="User already exist";
+        public static string AccessTokenCreated="Token Created";
     }
 }
