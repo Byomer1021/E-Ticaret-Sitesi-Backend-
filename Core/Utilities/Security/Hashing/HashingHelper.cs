@@ -30,6 +30,8 @@ namespace Core.Utilities.Security.Hashing
                         return false;
                     }
                 }
+                Console.WriteLine($"Salt Length: {passwordSalt.Length} bytes");
+
                 return true;
             }
         }
